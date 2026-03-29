@@ -1695,7 +1695,7 @@ async function getAdminConfigData(companyId = 1) {
   );
 
   const [flows] = await pool.query(
-    `SELECT ec.id AS category_id, ec.name AS category_name, af.step_order, r.name AS role_name, r.code AS role_code
+    `SELECT ec.id AS category_id, ec.name AS category_name, ec.soft_limit, af.step_order, r.name AS role_name, r.code AS role_code
      FROM approval_flows af
      JOIN expense_categories ec ON ec.id = af.category_id
      JOIN roles r ON r.id = af.role_id

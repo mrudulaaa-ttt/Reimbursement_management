@@ -2,16 +2,16 @@
 <section class="page-head">
   <div>
     <h2>My Reimbursements</h2>
-    <p class="subtle">Fill the request, upload docs, let OCR validate, and follow the employee timeline.</p>
+    <p class="subtle">Submit a request, let the checks run, and stay on top of the latest updates without a crowded workspace.</p>
   </div>
   <div class="role-chip">Employee View</div>
 </section>
 
 <section class="dashboard-grid employee-grid">
   <div class="panel upload-panel">
-    <div class="upload-icon">OR</div>
+    <div class="upload-icon">AI</div>
     <h3>Smart OCR Upload</h3>
-    <p class="subtle">Employees enter the request, upload the document, and AI validates value, authenticity, and duplicates.</p>
+    <p class="subtle">Build a clean request package with OCR checks, duplicate detection, and authenticity review before routing.</p>
     <% if (!managerConfigured) { %>
       <div class="flash error">Reporting manager is not assigned yet. Ask admin to define the employee-manager relationship.</div>
     <% } %>
@@ -93,7 +93,7 @@
   <div class="panel recent-claims-panel">
     <div class="section-head">
       <strong>Recent Claims</strong>
-      <span class="subtle">Employees can see full status trail</span>
+      <span class="subtle">Top 5 latest entries</span>
     </div>
     <div class="timeline-track recent-claims-scroll">
       <% if (!employeeClaims.length) { %>
@@ -104,12 +104,11 @@
           <span class="dot dot-<%= claim.status %>"></span>
           <div class="timeline-card">
             <div class="timeline-row">
-              <strong><%= claim.description %></strong>
+              <strong><%= claim.category_name %></strong>
               <span><%= claim.reported_currency %> <%= claim.amount %></span>
             </div>
             <p class="subtle">Submitted: <%= claim.expense_date.toISOString().slice(0, 10) %></p>
             <p class="timeline-status status-<%= claim.status %>"><%= claim.status_label %></p>
-            <small>OCR: <%= claim.ocr_status %> | Authenticity: <%= claim.authenticity_status %> | Converted: <%= claim.company_currency %> <%= claim.converted_amount %></small>
           </div>
         </article>
       <% }) %>
@@ -121,13 +120,13 @@
   <div class="panel">
     <div class="section-head">
       <strong>Approval Timeline</strong>
-      <span class="subtle">Visible only to employees</span>
+      <span class="subtle">Top 5 latest events</span>
     </div>
     <div class="log-list">
       <% if (!timeline.length) { %>
         <p class="subtle">Timeline will appear after your first submission.</p>
       <% } %>
-      <% timeline.slice(0, 10).forEach((item) => { %>
+      <% timeline.slice(0, 5).forEach((item) => { %>
         <div class="log-row">
           <span><%= item.event_label %></span>
           <small><%= item.created_at ? item.created_at.toISOString().slice(0, 16).replace("T", " ") : "" %></small>
@@ -137,7 +136,7 @@
   </div>
 
   <div class="panel">
-    <div class="section-head"><strong>History and Notifications</strong><span class="subtle">Saved updates for this user</span></div>
+    <div class="section-head"><strong>History and Notifications</strong><span class="subtle">Focused on recent activity</span></div>
     <div class="log-list">
       <% historyFeed.forEach((item) => { %>
         <div class="log-row">

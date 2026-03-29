@@ -2,14 +2,14 @@
 <section class="page-head">
   <div>
     <h2>Manager Approvals</h2>
-    <p class="subtle">Managers see approval requests and team details only. Timeline stays hidden here.</p>
+    <p class="subtle">Review the most important requests first with a smaller, cleaner queue and a concise team snapshot.</p>
   </div>
   <div class="role-chip">Manager View</div>
 </section>
 
 <section class="dashboard-grid employee-grid">
   <div class="panel">
-    <div class="section-head"><strong>My Team</strong></div>
+    <div class="section-head"><strong>My Team</strong><span class="subtle">Top 5</span></div>
     <div class="log-list">
       <% teamMembers.forEach((member) => { %>
         <div class="log-row">
@@ -20,7 +20,7 @@
     </div>
   </div>
   <div class="panel">
-    <div class="section-head"><strong>Review History</strong></div>
+    <div class="section-head"><strong>Review History</strong><span class="subtle">Top 5</span></div>
     <div class="log-list">
       <% historyFeed.forEach((item) => { %>
         <div class="log-row">
@@ -33,59 +33,39 @@
 </section>
 
 <section class="panel">
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Employee</th>
-          <th>Expense Details</th>
-          <th>Amount</th>
-          <th>AI Validation</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if (!managerQueue.length) { %>
-          <tr><td colspan="5" class="subtle">No approval requests right now.</td></tr>
-        <% } %>
-        <% managerQueue.forEach((claim) => { %>
-          <tr class="<%= claim.ai_summary.includes('Duplicate') ? 'risk-row' : '' %>">
-            <td>
-              <strong><%= claim.employee_name %></strong>
-              <div class="subtle"><%= claim.department_name || 'Department' %></div>
-            </td>
-            <td>
-              <strong><%= claim.category_name %></strong>
-              <div class="subtle"><%= claim.description || 'Expense claim' %></div>
-              <div><span class="pill pill-<%= claim.status %>"><%= claim.status_label %></span></div>
-            </td>
-            <td>
-              <strong><%= claim.reported_currency %> <%= claim.amount %></strong>
-              <div class="subtle"><%= claim.company_currency %> <%= claim.converted_amount %></div>
-            </td>
-            <td>
-              <span class="badge <%= claim.ai_summary === 'Authentic' ? 'badge-success' : 'badge-danger' %>"><%= claim.ai_summary %></span>
-            </td>
-            <td>
-              <div class="actions">
-                <form action="/claims/<%= claim.id %>/approve" method="post">
-                  <button type="submit">Approve</button>
-                </form>
-                <form action="/claims/<%= claim.id %>/reject" method="post">
-                  <input type="hidden" name="comment" value="Disapproved by manager" />
-                  <button type="submit" class="ghost">Reject</button>
-                </form>
-              </div>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
+  <div class="section-head"><strong>Approval Queue</strong><span class="subtle">Top 5 pending items</span></div>
+  <div class="queue">
+    <% if (!managerQueue.length) { %>
+      <p class="subtle">No approval requests right now.</p>
+    <% } %>
+    <% managerQueue.forEach((claim) => { %>
+      <article class="queue-card <%= claim.ai_summary.includes('Duplicate') ? 'queue-card-risk' : '' %>">
+        <div class="timeline-row">
+          <strong><%= claim.employee_name %></strong>
+          <span class="pill pill-<%= claim.status %>"><%= claim.status_label %></span>
+        </div>
+        <div class="compact-meta">
+          <span><strong><%= claim.category_name %></strong></span>
+          <span><strong><%= claim.reported_currency %> <%= claim.amount %></strong></span>
+          <span class="subtle"><%= claim.department_name || 'Department' %></span>
+          <span class="badge <%= claim.ai_summary === 'Authentic' ? 'badge-success' : 'badge-danger' %>"><%= claim.ai_summary %></span>
+        </div>
+        <div class="actions compact-actions">
+          <form action="/claims/<%= claim.id %>/approve" method="post">
+            <button type="submit">Approve</button>
+          </form>
+          <form action="/claims/<%= claim.id %>/reject" method="post">
+            <input type="hidden" name="comment" value="Disapproved by manager" />
+            <button type="submit" class="ghost">Reject</button>
+          </form>
+        </div>
+      </article>
+    <% }) %>
   </div>
 </section>
 
 <section class="panel">
-  <div class="section-head"><strong>Notifications</strong></div>
+  <div class="section-head"><strong>Notifications</strong><span class="subtle">Top 5</span></div>
   <div class="log-list">
     <% notifications.forEach((notice) => { %>
       <div class="log-row">

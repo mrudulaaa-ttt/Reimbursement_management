@@ -2,7 +2,7 @@
 <section class="page-head">
   <div>
     <h2>Finance Dashboard</h2>
-    <p class="subtle">Finance participates in the 60% consensus layer and also sees department-wise aggregation.</p>
+    <p class="subtle">Finance gets a tighter review queue, compact summaries, and a consistent view of the latest reimbursement movement.</p>
   </div>
   <div class="role-chip">Finance View</div>
 </section>
@@ -16,47 +16,38 @@
 
 <section class="dashboard-grid finance-grid">
   <div class="panel">
-    <div class="section-head"><strong>Finance Review Queue</strong></div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Employee</th>
-            <th>Category</th>
-            <th>Status</th>
-            <th>Amount</th>
-            <th>Decision</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if (!reviewQueue.length) { %>
-            <tr><td colspan="5" class="subtle">No finance approvals pending.</td></tr>
-          <% } %>
-          <% reviewQueue.forEach((claim) => { %>
-            <tr>
-              <td><%= claim.employee_name %></td>
-              <td><%= claim.category_name %></td>
-              <td><span class="pill pill-<%= claim.status %>"><%= claim.status_label %></span></td>
-              <td><%= claim.reported_currency %> <%= claim.amount %></td>
-              <td>
-                <div class="actions">
-                  <form action="/reviews/<%= claim.id %>/approve" method="post">
-                    <button type="submit">Approve</button>
-                  </form>
-                  <form action="/reviews/<%= claim.id %>/reject" method="post">
-                    <input type="hidden" name="comment" value="Finance rejected" />
-                    <button type="submit" class="ghost">Reject</button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
+    <div class="section-head"><strong>Finance Review Queue</strong><span class="subtle">Top 5 pending items</span></div>
+    <div class="queue">
+      <% if (!reviewQueue.length) { %>
+        <p class="subtle">No finance approvals pending.</p>
+      <% } %>
+      <% reviewQueue.forEach((claim) => { %>
+        <article class="queue-card">
+          <div class="timeline-row">
+            <strong><%= claim.employee_name %></strong>
+            <span class="pill pill-<%= claim.status %>"><%= claim.status_label %></span>
+          </div>
+          <div class="compact-meta">
+            <span><strong><%= claim.category_name %></strong></span>
+            <span><strong><%= claim.reported_currency %> <%= claim.amount %></strong></span>
+            <span class="subtle"><%= claim.department_name || 'No Department' %></span>
+            <span class="subtle">Risk <%= claim.risk_score %></span>
+          </div>
+          <div class="actions compact-actions">
+            <form action="/reviews/<%= claim.id %>/approve" method="post">
+              <button type="submit">Approve</button>
+            </form>
+            <form action="/reviews/<%= claim.id %>/reject" method="post">
+              <input type="hidden" name="comment" value="Finance rejected" />
+              <button type="submit" class="ghost">Reject</button>
+            </form>
+          </div>
+        </article>
+      <% }) %>
     </div>
   </div>
   <div class="panel">
-    <div class="section-head"><strong>Aggregate Reimbursement Value</strong></div>
+    <div class="section-head"><strong>Aggregate Reimbursement Value</strong><span class="subtle">Top 5 departments</span></div>
     <% stats.departmentSpend.forEach((item) => { %>
       <div class="meter-row">
         <span><%= item.name %></span>
@@ -68,7 +59,7 @@
 </section>
 
 <section class="panel">
-  <div class="section-head"><strong>Finance Review Feed</strong></div>
+  <div class="section-head"><strong>Finance Review Feed</strong><span class="subtle">Top 5 latest claims</span></div>
   <div class="queue">
     <% financeQueue.forEach((claim) => { %>
       <article class="queue-card">
@@ -76,15 +67,19 @@
           <strong><%= claim.employee_name %></strong>
           <span class="pill pill-<%= claim.status %>"><%= claim.status_label %></span>
         </div>
-        <p><%= claim.category_name %> | <%= claim.department_name || 'No Department' %> | <%= claim.reported_currency %> <%= claim.amount %></p>
-        <small>Converted: <%= claim.company_currency %> <%= claim.converted_amount %> | Risk <%= claim.risk_score %> | <%= claim.ai_summary %></small>
+        <div class="compact-meta">
+          <span><strong><%= claim.category_name %></strong></span>
+          <span><strong><%= claim.reported_currency %> <%= claim.amount %></strong></span>
+          <span class="subtle"><%= claim.department_name || 'No Department' %></span>
+          <span class="badge <%= claim.ai_summary === 'Authentic' ? 'badge-success' : 'badge-danger' %>"><%= claim.ai_summary %></span>
+        </div>
       </article>
     <% }) %>
   </div>
 </section>
 
 <section class="panel">
-  <div class="section-head"><strong>Finance History</strong></div>
+  <div class="section-head"><strong>Finance History</strong><span class="subtle">Top 5</span></div>
   <div class="log-list">
     <% historyFeed.forEach((item) => { %>
       <div class="log-row">
@@ -96,7 +91,7 @@
 </section>
 
 <section class="panel">
-  <div class="section-head"><strong>Notifications</strong></div>
+  <div class="section-head"><strong>Notifications</strong><span class="subtle">Top 5</span></div>
   <div class="log-list">
     <% notifications.forEach((notice) => { %>
       <div class="log-row">

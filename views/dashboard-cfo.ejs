@@ -2,7 +2,7 @@
 <section class="page-head">
   <div>
     <h2>CFO Shortcut Desk</h2>
-    <p class="subtle">CFO approval is independent from the 60% calculation. If CFO approves, the expense is immediately approved.</p>
+    <p class="subtle">Review the highest-signal requests and risk flags quickly, without oversized tables or duplicated visual patterns.</p>
   </div>
   <div class="role-chip">CFO View</div>
 </section>
@@ -15,48 +15,38 @@
 </section>
 
 <section class="panel">
-  <div class="section-head"><strong>CFO Approval Queue</strong></div>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Employee</th>
-          <th>Category</th>
-          <th>Amount</th>
-          <th>AI Summary</th>
-          <th>Decision</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if (!reviewQueue.length) { %>
-          <tr><td colspan="5" class="subtle">No CFO shortcuts pending.</td></tr>
-        <% } %>
-        <% reviewQueue.forEach((claim) => { %>
-          <tr>
-            <td><%= claim.employee_name %></td>
-            <td><%= claim.category_name %></td>
-            <td><%= claim.reported_currency %> <%= claim.amount %></td>
-            <td><%= claim.ai_summary %></td>
-            <td>
-              <div class="actions">
-                <form action="/reviews/<%= claim.id %>/approve" method="post">
-                  <button type="submit">Approve</button>
-                </form>
-                <form action="/reviews/<%= claim.id %>/reject" method="post">
-                  <input type="hidden" name="comment" value="CFO did not approve" />
-                  <button type="submit" class="ghost">Reject</button>
-                </form>
-              </div>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
+  <div class="section-head"><strong>CFO Approval Queue</strong><span class="subtle">Top 5 pending items</span></div>
+  <div class="queue">
+    <% if (!reviewQueue.length) { %>
+      <p class="subtle">No CFO shortcuts pending.</p>
+    <% } %>
+    <% reviewQueue.forEach((claim) => { %>
+      <article class="queue-card">
+        <div class="timeline-row">
+          <strong><%= claim.employee_name %></strong>
+          <span class="badge <%= claim.ai_summary === 'Authentic' ? 'badge-success' : 'badge-danger' %>"><%= claim.ai_summary %></span>
+        </div>
+        <div class="compact-meta">
+          <span><strong><%= claim.category_name %></strong></span>
+          <span><strong><%= claim.reported_currency %> <%= claim.amount %></strong></span>
+          <span class="subtle">Status: <%= claim.status_label %></span>
+        </div>
+        <div class="actions compact-actions">
+          <form action="/reviews/<%= claim.id %>/approve" method="post">
+            <button type="submit">Approve</button>
+          </form>
+          <form action="/reviews/<%= claim.id %>/reject" method="post">
+            <input type="hidden" name="comment" value="CFO did not approve" />
+            <button type="submit" class="ghost">Reject</button>
+          </form>
+        </div>
+      </article>
+    <% }) %>
   </div>
 </section>
 
 <section class="panel">
-  <div class="section-head"><strong>CFO History</strong></div>
+  <div class="section-head"><strong>CFO History</strong><span class="subtle">Top 5</span></div>
   <div class="log-list">
     <% historyFeed.forEach((item) => { %>
       <div class="log-row">
@@ -68,16 +58,13 @@
 </section>
 
 <section class="panel">
-  <div class="section-head"><strong>Top AI Flags</strong></div>
+  <div class="section-head"><strong>Top AI Flags</strong><span class="subtle">Top 5 highest risk</span></div>
   <% if (!summary.topFlags.length) { %>
     <p class="subtle">No flagged claims yet.</p>
   <% } %>
   <% summary.topFlags.forEach((flag) => { %>
     <div class="flag-row">
-      <div>
-        <strong><%= flag.employee_name %></strong>
-        <p class="subtle"><%= flag.description || 'Expense claim' %></p>
-      </div>
+      <div><strong><%= flag.employee_name %></strong></div>
       <div class="flag-meta">
         <span class="badge badge-danger"><%= flag.ai_summary %></span>
         <strong><%= flag.company_currency %> <%= flag.converted_amount %></strong>
@@ -87,7 +74,7 @@
 </section>
 
 <section class="panel">
-  <div class="section-head"><strong>Notifications</strong></div>
+  <div class="section-head"><strong>Notifications</strong><span class="subtle">Top 5</span></div>
   <div class="log-list">
     <% notifications.forEach((notice) => { %>
       <div class="log-row">

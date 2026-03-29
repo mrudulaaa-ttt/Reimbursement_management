@@ -2,7 +2,7 @@
 <section class="page-head">
   <div>
     <h2>System Configuration</h2>
-    <p class="subtle">Country-based localization, admin-created users, reporting relationships, and dynamic approval groups.</p>
+    <p class="subtle">Create users dynamically, manage reporting lines, and keep workflow setup readable with shorter, better-scoped lists.</p>
   </div>
   <div class="role-chip">Admin View</div>
 </section>
@@ -18,12 +18,12 @@
     </div>
   </div>
   <div class="panel">
-    <div class="section-head"><strong>Workflow Engine</strong></div>
+    <div class="section-head"><strong>Notifications</strong><span class="subtle">Top 5</span></div>
     <div class="log-list">
-      <% config.flows.forEach((flow) => { %>
+      <% notifications.forEach((notice) => { %>
         <div class="log-row">
-          <span><%= flow.category_name %> -> Step <%= flow.step_order %></span>
-          <strong><%= flow.role_name %></strong>
+          <span><strong><%= notice.title %></strong> - <%= notice.body %></span>
+          <small><%= notice.created_at.toISOString().slice(0, 16).replace("T", " ") %></small>
         </div>
       <% }) %>
     </div>
@@ -31,6 +31,25 @@
 </section>
 
 <section class="dashboard-grid admin-grid">
+  <div class="panel">
+    <div class="section-head"><strong>Workflow Engine</strong><span class="subtle">Top 5 categories</span></div>
+    <div class="flow-summary-list">
+      <% config.flows.forEach((flow) => { %>
+        <article class="flow-summary-card">
+          <div class="flow-summary-head">
+            <div>
+              <strong><%= flow.category_name %></strong>
+              <p class="subtle">Threshold: <%= currentUser.currency_code || 'USD' %> <%= flow.soft_limit.toFixed(2) %></p>
+            </div>
+            <span class="badge badge-neutral">Limit</span>
+          </div>
+        </article>
+      <% }) %>
+      <% if (!config.flows.length) { %>
+        <p class="subtle">No approval groups configured yet.</p>
+      <% } %>
+    </div>
+  </div>
   <div class="panel">
     <div class="section-head"><strong>Create Users and Relationships</strong></div>
     <form action="/admin/users" method="post" class="stack">
@@ -126,45 +145,25 @@
 </section>
 
 <section class="panel">
-  <div class="section-head"><strong>User Access Matrix</strong></div>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Department / Relationship</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% config.users.forEach((user) => { %>
-          <tr>
-            <td><%= user.full_name %></td>
-            <td><%= user.email %></td>
-            <td><span class="badge badge-neutral"><%= user.role_name %></span></td>
-            <td><%= user.department_name || 'Not set' %><div class="subtle"><%= user.manager_name || 'No manager assigned' %></div></td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<section class="panel">
-  <div class="section-head"><strong>Notifications</strong></div>
-  <div class="log-list">
-    <% notifications.forEach((notice) => { %>
-      <div class="log-row">
-        <span><strong><%= notice.title %></strong> - <%= notice.body %></span>
-        <small><%= notice.created_at.toISOString().slice(0, 16).replace("T", " ") %></small>
-      </div>
+  <div class="section-head"><strong>User Access Matrix</strong><span class="subtle">Top 5 users</span></div>
+  <div class="queue">
+    <% config.users.forEach((user) => { %>
+      <article class="queue-card">
+        <div class="timeline-row">
+          <strong><%= user.full_name %></strong>
+          <span class="badge badge-neutral"><%= user.role_name %></span>
+        </div>
+        <div class="compact-meta">
+          <span class="subtle"><%= user.email %></span>
+          <span><strong><%= user.department_name || 'Not set' %></strong></span>
+        </div>
+      </article>
     <% }) %>
   </div>
 </section>
 
 <section class="panel">
-  <div class="section-head"><strong>Workflow History</strong></div>
+  <div class="section-head"><strong>Workflow History</strong><span class="subtle">Top 5</span></div>
   <div class="log-list">
     <% historyFeed.forEach((item) => { %>
       <div class="log-row">
