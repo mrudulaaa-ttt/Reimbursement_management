@@ -62,16 +62,24 @@ CREATE TABLE IF NOT EXISTS claims (
   manager_user_id INT NOT NULL,
   category_id INT NOT NULL,
   amount DECIMAL(12,2) NOT NULL,
+  reported_currency VARCHAR(10) NOT NULL DEFAULT 'INR',
+  company_currency VARCHAR(10) NOT NULL DEFAULT 'INR',
+  exchange_rate DECIMAL(12,6) NOT NULL DEFAULT 1,
+  converted_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
   expense_date DATE NOT NULL,
   description TEXT,
+  remarks TEXT NULL,
   receipt_name VARCHAR(255) NOT NULL,
   receipt_hash CHAR(64) NOT NULL,
   ocr_vendor VARCHAR(255),
   ocr_amount DECIMAL(12,2),
   ocr_date DATE,
+  ocr_status VARCHAR(40) NOT NULL DEFAULT 'checked',
+  authenticity_status VARCHAR(40) NOT NULL DEFAULT 'authentic',
   risk_score INT NOT NULL DEFAULT 0,
   ai_summary TEXT,
-  status VARCHAR(50) NOT NULL DEFAULT 'pending_manager',
+  formatted_request TEXT,
+  status VARCHAR(60) NOT NULL DEFAULT 'pending_manager',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_claims_employee FOREIGN KEY (employee_user_id) REFERENCES users(id),
   CONSTRAINT fk_claims_manager FOREIGN KEY (manager_user_id) REFERENCES users(id),
@@ -99,6 +107,18 @@ CREATE TABLE IF NOT EXISTS timelines (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_timelines_claim FOREIGN KEY (claim_id) REFERENCES claims(id) ON DELETE CASCADE,
   CONSTRAINT fk_timelines_actor FOREIGN KEY (actor_user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  claim_id INT NULL,
+  title VARCHAR(160) NOT NULL,
+  body TEXT NOT NULL,
+  is_read TINYINT(1) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_notifications_claim FOREIGN KEY (claim_id) REFERENCES claims(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS ai_audits (

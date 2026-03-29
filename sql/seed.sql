@@ -2,19 +2,21 @@ INSERT IGNORE INTO departments (id, name) VALUES
   (1, 'Engineering'),
   (2, 'Marketing'),
   (3, 'Operations'),
-  (4, 'Finance');
+  (4, 'Finance'),
+  (5, 'Procurement');
 
 INSERT IGNORE INTO roles (id, name, code) VALUES
-  (10, 'Admin', 'admin'),
   (1, 'Employee', 'employee'),
   (2, 'Manager', 'manager'),
   (3, 'Department Head', 'department_head'),
-  (4, 'Finance', 'finance'),
+  (4, 'Finance Manager', 'finance'),
   (5, 'CFO', 'cfo'),
-  (6, 'Ops', 'ops'),
-  (7, 'Tech Head', 'tech_head'),
-  (8, 'Procurement', 'procurement'),
-  (9, 'Marketing Head', 'marketing_head');
+  (6, 'Operations Manager', 'ops'),
+  (7, 'Tech Department Head', 'tech_head'),
+  (8, 'Procurement Lead', 'procurement'),
+  (9, 'Marketing Head', 'marketing_head'),
+  (10, 'Admin', 'admin'),
+  (11, 'Senior Manager', 'senior_manager');
 
 INSERT IGNORE INTO companies (id, name, country, currency_code) VALUES
   (1, 'Demo Workspace', 'India', 'INR');
@@ -23,13 +25,15 @@ INSERT IGNORE INTO users (id, full_name, email, password, company_id, department
   (1, 'Asha Employee', 'employee@test.com', 'demo123', 1, 1, 2),
   (2, 'Ravi Manager', 'manager@test.com', 'demo123', 1, 1, NULL),
   (3, 'Nina Finance', 'finance@test.com', 'demo123', 1, 4, NULL),
-  (4, 'Omar Ops', 'ops@test.com', 'demo123', 1, 3, NULL),
+  (4, 'Omar Operations', 'ops@test.com', 'demo123', 1, 3, NULL),
   (5, 'Priya Tech Head', 'techhead@test.com', 'demo123', 1, 1, NULL),
-  (6, 'Karan Procurement', 'procurement@test.com', 'demo123', 1, 4, NULL),
+  (6, 'Karan Procurement', 'procurement@test.com', 'demo123', 1, 5, NULL),
   (7, 'Meera Marketing Head', 'marketing@test.com', 'demo123', 1, 2, NULL),
   (8, 'Dev Department Head', 'depthead@test.com', 'demo123', 1, 1, NULL),
   (9, 'CFO Demo', 'cfo@test.com', 'demo123', 1, 4, NULL),
-  (10, 'Admin Demo', 'admin@test.com', 'demo123', 1, 4, NULL);
+  (10, 'Admin Demo', 'admin@test.com', 'demo123', 1, 4, NULL),
+  (11, 'Admin Ops', 'admin2@test.com', 'demo123', 1, 3, NULL),
+  (12, 'Sara Senior Manager', 'senior@test.com', 'demo123', 1, 1, NULL);
 
 INSERT IGNORE INTO user_roles (user_id, role_id) VALUES
   (1, 1),
@@ -41,12 +45,14 @@ INSERT IGNORE INTO user_roles (user_id, role_id) VALUES
   (7, 9),
   (8, 3),
   (9, 5),
-  (10, 10);
+  (10, 10),
+  (11, 10),
+  (12, 11);
 
 INSERT IGNORE INTO expense_categories (id, name, code, soft_limit) VALUES
-  (1, 'Travel', 'travel', 500.00),
-  (2, 'Tech', 'tech', 1500.00),
-  (3, 'Marketing', 'marketing', 1000.00);
+  (1, 'Travel Expense', 'travel', 500.00),
+  (2, 'Tech Purchase', 'tech', 1500.00),
+  (3, 'Marketing Budget', 'marketing', 1000.00);
 
 INSERT IGNORE INTO approval_flows (category_id, step_order, role_id) VALUES
   (1, 1, 4),
@@ -56,4 +62,5 @@ INSERT IGNORE INTO approval_flows (category_id, step_order, role_id) VALUES
   (2, 2, 4),
   (2, 3, 8),
   (3, 1, 9),
-  (3, 2, 4);
+  (3, 2, 4),
+  (3, 3, 6);

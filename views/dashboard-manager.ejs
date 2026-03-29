@@ -2,9 +2,34 @@
 <section class="page-head">
   <div>
     <h2>Manager Approvals</h2>
-    <p class="subtle">Review team expenses. Manager view stays focused on decisions only.</p>
+    <p class="subtle">Managers see approval requests and team details only. Timeline stays hidden here.</p>
   </div>
   <div class="role-chip">Manager View</div>
+</section>
+
+<section class="dashboard-grid employee-grid">
+  <div class="panel">
+    <div class="section-head"><strong>My Team</strong></div>
+    <div class="log-list">
+      <% teamMembers.forEach((member) => { %>
+        <div class="log-row">
+          <span><strong><%= member.full_name %></strong> - <%= member.department_name || 'Department' %></span>
+          <small><%= member.email %></small>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="section-head"><strong>Notifications</strong></div>
+    <div class="log-list">
+      <% notifications.forEach((notice) => { %>
+        <div class="log-row">
+          <span><strong><%= notice.title %></strong> - <%= notice.body %></span>
+          <small><%= notice.created_at.toISOString().slice(0, 16).replace("T", " ") %></small>
+        </div>
+      <% }) %>
+    </div>
+  </div>
 </section>
 
 <section class="panel">
@@ -32,8 +57,12 @@
             <td>
               <strong><%= claim.category_name %></strong>
               <div class="subtle"><%= claim.description || 'Expense claim' %></div>
+              <div class="subtle"><%= claim.status_label %></div>
             </td>
-            <td><strong>INR <%= claim.amount %></strong></td>
+            <td>
+              <strong><%= claim.reported_currency %> <%= claim.amount %></strong>
+              <div class="subtle"><%= claim.company_currency %> <%= claim.converted_amount %></div>
+            </td>
             <td>
               <span class="badge <%= claim.ai_summary === 'Authentic' ? 'badge-success' : 'badge-danger' %>"><%= claim.ai_summary %></span>
             </td>
@@ -43,7 +72,7 @@
                   <button type="submit">Approve</button>
                 </form>
                 <form action="/claims/<%= claim.id %>/reject" method="post">
-                  <input type="hidden" name="comment" value="Rejected by manager" />
+                  <input type="hidden" name="comment" value="Disapproved by manager" />
                   <button type="submit" class="ghost">Reject</button>
                 </form>
               </div>

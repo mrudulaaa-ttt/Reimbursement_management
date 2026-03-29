@@ -217,6 +217,19 @@ button.ghost,
   border: 1px solid var(--line);
 }
 
+.request-preview {
+  text-align: left;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--surface-soft);
+}
+
+.request-preview p {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
 .section-head {
   display: flex;
   justify-content: space-between;
@@ -575,6 +588,12 @@ td {
   display: flex;
   gap: 12px;
   align-items: center;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 @media (max-width: 1080px) {

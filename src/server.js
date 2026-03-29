@@ -5,23 +5,31 @@ const path = require("path");
 const multer = require("multer");
 const session = require("express-session");
 const {
+  COUNTRY_CURRENCY_MAP,
   initDatabase,
   createCompanySetup,
   authenticateUser,
   getUserById,
   getRoleRedirect,
   getRoleLabel,
+  getStatusLabel,
   createClaim,
   approveStep,
   rejectStep,
+  createUserByAdmin,
+  saveApprovalFlow,
   getOverviewStats,
   getClaimsForEmployee,
   getEmployeeTimeline,
   getManagerQueue,
+  getManagerTeam,
   getFinanceQueue,
   getExecutiveSummary,
   getAdminConfigData,
+  getNotifications,
   getCategories,
+  getRolesForAdmin,
+  getDepartments,
   getUsersByRole,
   getQuickSwitchUsers,
 } = require("./store");
@@ -42,12 +50,9 @@ app.use(
 );
 
 app.use(async (req, res, next) => {
-  if (req.session.userId) {
-    res.locals.currentUser = await getUserById(req.session.userId);
-  } else {
-    res.locals.currentUser = null;
-  }
+  res.locals.currentUser = req.session.userId ? await getUserById(req.session.userId) : null;
   res.locals.roleBadge = res.locals.currentUser ? getRoleLabel(res.locals.currentUser.role_code) : "";
+  res.locals.statusLabel = getStatusLabel;
   next();
 });
 
@@ -92,7 +97,6 @@ app.post("/login", async (req, res) => {
     if (!user) {
       return res.redirect("/login?error=Invalid email or password");
     }
-
     req.session.userId = user.id;
     return res.redirect(`${getRoleRedirect(user.role_code)}?message=${encodeURIComponent(`Welcome back, ${user.role_name}`)}`);
   } catch (error) {
@@ -114,6 +118,7 @@ app.get("/signup", (req, res) => {
     pageTitle: "Signup",
     message: req.query.message || "",
     error: req.query.error || "",
+    currencyMap: COUNTRY_CURRENCY_MAP,
   });
 });
 
@@ -135,9 +140,7 @@ app.get("/forgot-password", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.redirect("/login?message=Logged out successfully");
-  });
+  req.session.destroy(() => res.redirect("/login?message=Logged out successfully"));
 });
 
 app.get("/redirect-by-role", requireAuth, async (req, res) => {
@@ -147,20 +150,22 @@ app.get("/redirect-by-role", requireAuth, async (req, res) => {
 
 app.get("/dashboard/employee", requireAuth, requireRole("employee"), async (req, res, next) => {
   try {
-    const [employeeClaims, timeline, categories, managers] = await Promise.all([
+    const [employeeClaims, timeline, categories, notifications] = await Promise.all([
       getClaimsForEmployee(req.user.id),
       getEmployeeTimeline(req.user.id),
       getCategories(),
-      getUsersByRole("manager"),
+      getNotifications(req.user.id),
     ]);
     res.render("dashboard-employee", {
       pageTitle: "Employee Dashboard",
       message: req.query.message || "",
       error: req.query.error || "",
       categories,
-      managers,
       employeeClaims,
       timeline,
+      notifications,
+      companyCurrency: req.user.currency_code || "INR",
+      managerConfigured: Boolean(req.user.manager_user_id),
     });
   } catch (error) {
     next(error);
@@ -169,12 +174,18 @@ app.get("/dashboard/employee", requireAuth, requireRole("employee"), async (req,
 
 app.get("/dashboard/manager", requireAuth, requireRole("manager"), async (req, res, next) => {
   try {
-    const managerQueue = await getManagerQueue(req.user.id);
+    const [managerQueue, teamMembers, notifications] = await Promise.all([
+      getManagerQueue(req.user.id),
+      getManagerTeam(req.user.id),
+      getNotifications(req.user.id),
+    ]);
     res.render("dashboard-manager", {
       pageTitle: "Manager Approvals",
       message: req.query.message || "",
       error: req.query.error || "",
       managerQueue,
+      teamMembers,
+      notifications,
     });
   } catch (error) {
     next(error);
@@ -183,9 +194,10 @@ app.get("/dashboard/manager", requireAuth, requireRole("manager"), async (req, r
 
 app.get("/dashboard/finance", requireAuth, requireRole("finance"), async (req, res, next) => {
   try {
-    const [stats, financeQueue] = await Promise.all([
+    const [stats, financeQueue, notifications] = await Promise.all([
       getOverviewStats(req.user.company_id || 1),
       getFinanceQueue(req.user.company_id || 1),
+      getNotifications(req.user.id),
     ]);
     res.render("dashboard-finance", {
       pageTitle: "Finance Dashboard",
@@ -193,6 +205,8 @@ app.get("/dashboard/finance", requireAuth, requireRole("finance"), async (req, r
       error: req.query.error || "",
       stats,
       financeQueue,
+      notifications,
+      companyCurrency: req.user.currency_code || "INR",
     });
   } catch (error) {
     next(error);
@@ -201,12 +215,16 @@ app.get("/dashboard/finance", requireAuth, requireRole("finance"), async (req, r
 
 app.get("/dashboard/cfo", requireAuth, requireRole("cfo"), async (req, res, next) => {
   try {
-    const summary = await getExecutiveSummary(req.user.company_id || 1);
+    const [summary, notifications] = await Promise.all([
+      getExecutiveSummary(req.user.company_id || 1),
+      getNotifications(req.user.id),
+    ]);
     res.render("dashboard-cfo", {
       pageTitle: "Executive Summary",
       message: req.query.message || "",
       error: req.query.error || "",
       summary,
+      notifications,
     });
   } catch (error) {
     next(error);
@@ -215,9 +233,14 @@ app.get("/dashboard/cfo", requireAuth, requireRole("cfo"), async (req, res, next
 
 app.get("/dashboard/admin", requireAuth, requireRole("admin"), async (req, res, next) => {
   try {
-    const [config, stats] = await Promise.all([
+    const [config, stats, roles, departments, managers, categories, notifications] = await Promise.all([
       getAdminConfigData(req.user.company_id || 1),
       getOverviewStats(req.user.company_id || 1),
+      getRolesForAdmin(),
+      getDepartments(),
+      getUsersByRole("manager", req.user.company_id || 1),
+      getCategories(),
+      getNotifications(req.user.id),
     ]);
     res.render("dashboard-admin", {
       pageTitle: "Admin Control",
@@ -225,6 +248,12 @@ app.get("/dashboard/admin", requireAuth, requireRole("admin"), async (req, res, 
       error: req.query.error || "",
       config,
       stats,
+      roles,
+      departments,
+      managers,
+      categories,
+      notifications,
+      currencyMap: COUNTRY_CURRENCY_MAP,
     });
   } catch (error) {
     next(error);
@@ -235,10 +264,11 @@ app.post("/claims", requireAuth, requireRole("employee"), upload.single("receipt
   try {
     await createClaim({
       employeeId: req.user.id,
-      managerId: Number(req.body.manager_id),
       categoryId: Number(req.body.category_id),
       amount: Number(req.body.amount),
+      reportedCurrency: req.body.reported_currency || req.user.currency_code || "INR",
       description: req.body.description,
+      remarks: req.body.remarks,
       expenseDate: req.body.expense_date,
       receipt: req.file,
     });
@@ -263,6 +293,36 @@ app.post("/claims/:claimId/reject", requireAuth, requireRole("manager"), async (
     res.redirect("/dashboard/manager?message=Claim rejected");
   } catch (error) {
     res.redirect(`/dashboard/manager?error=${encodeURIComponent(error.message)}`);
+  }
+});
+
+app.post("/admin/users", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    await createUserByAdmin({
+      companyId: req.user.company_id,
+      fullName: req.body.full_name,
+      email: req.body.email,
+      password: req.body.password,
+      roleCode: req.body.role_code,
+      departmentId: Number(req.body.department_id) || null,
+      managerUserId: Number(req.body.manager_user_id) || null,
+    });
+    res.redirect("/dashboard/admin?message=User created successfully");
+  } catch (error) {
+    res.redirect(`/dashboard/admin?error=${encodeURIComponent(error.message)}`);
+  }
+});
+
+app.post("/admin/flows", requireAuth, requireRole("admin"), async (req, res) => {
+  try {
+    const roleCodes = [req.body.step_one_role, req.body.step_two_role, req.body.step_three_role];
+    await saveApprovalFlow({
+      categoryId: Number(req.body.category_id),
+      roleCodes,
+    });
+    res.redirect("/dashboard/admin?message=Approval flow updated");
+  } catch (error) {
+    res.redirect(`/dashboard/admin?error=${encodeURIComponent(error.message)}`);
   }
 });
 

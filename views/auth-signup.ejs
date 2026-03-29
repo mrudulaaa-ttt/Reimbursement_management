@@ -11,7 +11,7 @@
     <section class="auth-visual signup-visual">
       <div class="auth-badge">Workspace Creation</div>
       <h1>Launch a reimbursement workspace in under a minute.</h1>
-      <p>Signup creates the company, maps the base currency from country, and provisions the admin account automatically.</p>
+      <p>Company country drives base currency, and the first admin account is created during signup.</p>
     </section>
 
     <section class="auth-card">
@@ -28,16 +28,18 @@
         </label>
         <label>
           Country
-          <select name="country" required>
-            <option value="India">India</option>
-            <option value="United States">United States</option>
-            <option value="Germany">Germany</option>
-            <option value="United Kingdom">United Kingdom</option>
-            <option value="Singapore">Singapore</option>
+          <select name="country" data-country-select required>
+            <% Object.keys(currencyMap).forEach((country) => { %>
+              <option value="<%= country %>"><%= country %></option>
+            <% }) %>
           </select>
         </label>
         <label>
-          Email
+          Auto-assigned Currency
+          <input type="text" value="<%= currencyMap['India'] %>" data-currency-preview readonly />
+        </label>
+        <label>
+          Admin Email
           <input type="email" name="email" required />
         </label>
         <label>
@@ -55,5 +57,9 @@
       </div>
     </section>
   </main>
+  <script>
+    window.currencyMap = <%- JSON.stringify(currencyMap) %>;
+  </script>
+  <script src="/app.js"></script>
 </body>
 </html>

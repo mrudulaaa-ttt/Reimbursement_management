@@ -2,7 +2,7 @@
 <section class="page-head">
   <div>
     <h2>Finance Dashboard</h2>
-    <p class="subtle">Department totals, decision outcomes, and high-risk reimbursements in one place.</p>
+    <p class="subtle">Department-wise aggregation, finance review states, exchange-normalized value, and AI validation feed.</p>
   </div>
   <div class="role-chip">Finance View</div>
 </section>
@@ -11,34 +11,46 @@
   <div class="stat-card"><span>Approved</span><strong><%= stats.summary.approved_count || 0 %></strong></div>
   <div class="stat-card"><span>Rejected</span><strong><%= stats.summary.rejected_count || 0 %></strong></div>
   <div class="stat-card"><span>Pending</span><strong><%= stats.summary.pending_count || 0 %></strong></div>
-  <div class="stat-card"><span>Total Spend</span><strong>INR <%= stats.summary.total_spend || 0 %></strong></div>
+  <div class="stat-card"><span>Total Spend</span><strong><%= companyCurrency %> <%= stats.summary.total_spend || 0 %></strong></div>
 </section>
 
 <section class="dashboard-grid finance-grid">
   <div class="panel">
-    <div class="section-head"><strong>Spend Per Department</strong></div>
+    <div class="section-head"><strong>Aggregate Reimbursement Value</strong></div>
     <% stats.departmentSpend.forEach((item) => { %>
       <div class="meter-row">
         <span><%= item.name %></span>
         <div class="meter"><div class="meter-fill" style="width: <%= Math.min(Number(item.total || 0) / 15, 100) %>%"></div></div>
-        <strong>INR <%= item.total %></strong>
+        <strong><%= companyCurrency %> <%= item.total %></strong>
       </div>
     <% }) %>
   </div>
   <div class="panel">
-    <div class="section-head"><strong>Claim Review Feed</strong></div>
+    <div class="section-head"><strong>Finance Review Feed</strong></div>
     <div class="queue">
       <% financeQueue.forEach((claim) => { %>
         <article class="queue-card">
           <div class="timeline-row">
             <strong><%= claim.employee_name %></strong>
-            <span class="pill pill-<%= claim.status %>"><%= claim.status.replaceAll('_', ' ') %></span>
+            <span class="pill pill-<%= claim.status %>"><%= claim.status_label %></span>
           </div>
-          <p><%= claim.category_name %> | <%= claim.department_name || 'No Department' %> | INR <%= claim.amount %></p>
-          <small>Risk <%= claim.risk_score %> | <%= claim.ai_summary %></small>
+          <p><%= claim.category_name %> | <%= claim.department_name || 'No Department' %> | <%= claim.reported_currency %> <%= claim.amount %></p>
+          <small>Converted: <%= claim.company_currency %> <%= claim.converted_amount %> | Risk <%= claim.risk_score %> | <%= claim.ai_summary %></small>
         </article>
       <% }) %>
     </div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><strong>Notifications</strong></div>
+  <div class="log-list">
+    <% notifications.forEach((notice) => { %>
+      <div class="log-row">
+        <span><strong><%= notice.title %></strong> - <%= notice.body %></span>
+        <small><%= notice.created_at.toISOString().slice(0, 16).replace("T", " ") %></small>
+      </div>
+    <% }) %>
   </div>
 </section>
 <%- include("partials/app-shell-end") %>
