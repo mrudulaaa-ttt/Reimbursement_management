@@ -1,0 +1,57 @@
+<%- include("partials/app-shell-start") %>
+<section class="page-head">
+  <div>
+    <h2>Manager Approvals</h2>
+    <p class="subtle">Review team expenses. Manager view stays focused on decisions only.</p>
+  </div>
+  <div class="role-chip">Manager View</div>
+</section>
+
+<section class="panel">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Expense Details</th>
+          <th>Amount</th>
+          <th>AI Validation</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!managerQueue.length) { %>
+          <tr><td colspan="5" class="subtle">No approval requests right now.</td></tr>
+        <% } %>
+        <% managerQueue.forEach((claim) => { %>
+          <tr class="<%= claim.ai_summary.includes('Duplicate') ? 'risk-row' : '' %>">
+            <td>
+              <strong><%= claim.employee_name %></strong>
+              <div class="subtle"><%= claim.department_name || 'Department' %></div>
+            </td>
+            <td>
+              <strong><%= claim.category_name %></strong>
+              <div class="subtle"><%= claim.description || 'Expense claim' %></div>
+            </td>
+            <td><strong>INR <%= claim.amount %></strong></td>
+            <td>
+              <span class="badge <%= claim.ai_summary === 'Authentic' ? 'badge-success' : 'badge-danger' %>"><%= claim.ai_summary %></span>
+            </td>
+            <td>
+              <div class="actions">
+                <form action="/claims/<%= claim.id %>/approve" method="post">
+                  <button type="submit">Approve</button>
+                </form>
+                <form action="/claims/<%= claim.id %>/reject" method="post">
+                  <input type="hidden" name="comment" value="Rejected by manager" />
+                  <button type="submit" class="ghost">Reject</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+<%- include("partials/app-shell-end") %>

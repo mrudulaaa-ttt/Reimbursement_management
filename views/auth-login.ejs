@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= pageTitle %></title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="auth-shell">
+    <section class="auth-visual">
+      <div class="auth-badge">Hackathon Ready</div>
+      <h1>Smart reimbursements, role-aware from the first click.</h1>
+      <p>Employees submit, managers approve, finance reviews, and leaders see the full picture instantly.</p>
+      <div class="auth-showcase">
+        <div class="mini-card">
+          <span>AI Validation</span>
+          <strong>Duplicate + mismatch detection</strong>
+        </div>
+        <div class="mini-card">
+          <span>Role Redirect</span>
+          <strong>Welcome back, Manager</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="auth-card">
+      <div class="auth-head">
+        <p class="eyebrow">Login</p>
+        <h2>Access your workspace</h2>
+        <p class="subtle">Minimal, fast, and built for live demo switching.</p>
+      </div>
+      <% if (message) { %><div class="flash success"><%= message %></div><% } %>
+      <% if (error) { %><div class="flash error"><%= error %></div><% } %>
+
+      <form action="/login" method="post" class="stack">
+        <label>
+          Email
+          <input type="email" name="email" placeholder="manager@test.com" required />
+        </label>
+        <label>
+          Password
+          <input type="password" name="password" placeholder="demo123" required />
+        </label>
+        <button type="submit">Login</button>
+      </form>
+
+      <div class="auth-links">
+        <a href="/forgot-password">Forgot Password</a>
+        <a href="/signup">Signup</a>
+      </div>
+
+      <div class="demo-switcher">
+        <div class="section-head">
+          <strong>Quick Switch Demo</strong>
+          <span class="subtle">One tap per role</span>
+        </div>
+        <div class="switch-grid">
+          <% quickSwitchUsers.forEach((user) => { %>
+            <form action="/demo-switch" method="post">
+              <input type="hidden" name="user_id" value="<%= user.id %>" />
+              <button type="submit" class="switch-pill"><%= user.role_code %></button>
+            </form>
+          <% }) %>
+        </div>
+        <p class="subtle">Demo users: employee@test.com, manager@test.com, admin@test.com. Password: demo123.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

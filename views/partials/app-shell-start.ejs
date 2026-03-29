@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= pageTitle %></title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="app-sidebar">
+      <div>
+        <div class="brand">
+          <div class="brand-mark">RP</div>
+          <div>
+            <h1>OdooPay AI</h1>
+            <p class="subtle">Reimbursement OS</p>
+          </div>
+        </div>
+        <p class="sidebar-label">Role Portals</p>
+        <nav class="side-nav">
+          <a href="/dashboard/employee" class="<%= currentUser && currentUser.role_code === 'employee' ? 'active' : '' %>">Employee Portal</a>
+          <a href="/dashboard/manager" class="<%= currentUser && currentUser.role_code === 'manager' ? 'active' : '' %>">Manager Desk</a>
+          <a href="/dashboard/admin" class="<%= currentUser && currentUser.role_code === 'admin' ? 'active' : '' %>">Admin Control</a>
+          <a href="/dashboard/finance" class="<%= currentUser && currentUser.role_code === 'finance' ? 'active' : '' %>">Finance Hub</a>
+          <a href="/dashboard/cfo" class="<%= currentUser && currentUser.role_code === 'cfo' ? 'active' : '' %>">Executive View</a>
+        </nav>
+      </div>
+      <div class="sidebar-footer">
+        <div>
+          <div class="demo-avatar"><%= currentUser ? currentUser.full_name.slice(0, 2).toUpperCase() : "DU" %></div>
+          <div>
+            <strong><%= currentUser ? currentUser.full_name : "Interactive Demo" %></strong>
+            <p class="subtle"><%= roleBadge || "Hackathon Workspace" %></p>
+          </div>
+        </div>
+        <form action="/logout" method="post">
+          <button type="submit" class="sidebar-logout">Logout</button>
+        </form>
+      </div>
+    </aside>
+    <main class="app-main">
+      <% if (message) { %><div class="flash success"><%= message %></div><% } %>
+      <% if (error) { %><div class="flash error"><%= error %></div><% } %>

@@ -1,0 +1,96 @@
+<%- include("partials/app-shell-start") %>
+<section class="page-head">
+  <div>
+    <h2>My Reimbursements</h2>
+    <p class="subtle">Submit expenses and track your approval timeline.</p>
+  </div>
+  <div class="role-chip">Employee View</div>
+</section>
+
+<section class="dashboard-grid employee-grid">
+  <div class="panel upload-panel">
+    <div class="upload-icon">◎</div>
+    <h3>Smart OCR Upload</h3>
+    <p class="subtle">Upload a receipt. AI will auto-check risk, amount, and duplicate usage.</p>
+    <form action="/claims" method="post" enctype="multipart/form-data" class="stack">
+      <label>
+        Category
+        <select name="category_id" required>
+          <% categories.forEach((category) => { %>
+            <option value="<%= category.id %>"><%= category.name %></option>
+          <% }) %>
+        </select>
+      </label>
+      <label>
+        Manager
+        <select name="manager_id" required>
+          <% managers.forEach((manager) => { %>
+            <option value="<%= manager.id %>"><%= manager.full_name %></option>
+          <% }) %>
+        </select>
+      </label>
+      <div class="inline">
+        <label>
+          Amount
+          <input type="number" step="0.01" name="amount" required />
+        </label>
+        <label>
+          Date
+          <input type="date" name="expense_date" required />
+        </label>
+      </div>
+      <label>
+        Description
+        <input type="text" name="description" placeholder="Flights to Tech Conference" required />
+      </label>
+      <label>
+        Select Receipt File
+        <input type="file" name="receipt" required />
+      </label>
+      <button type="submit">Submit Claim</button>
+    </form>
+  </div>
+
+  <div class="panel">
+    <div class="section-head">
+      <strong>Recent Claims</strong>
+    </div>
+    <div class="timeline-track">
+      <% if (!employeeClaims.length) { %>
+        <p class="subtle">No claims yet.</p>
+      <% } %>
+      <% employeeClaims.forEach((claim) => { %>
+        <article class="timeline-item">
+          <span class="dot dot-<%= claim.status %>"></span>
+          <div class="timeline-card">
+            <div class="timeline-row">
+              <strong><%= claim.description %></strong>
+              <span>$<%= claim.amount %></span>
+            </div>
+            <p class="subtle">Submitted: <%= claim.expense_date.toISOString().slice(0, 10) %></p>
+            <p class="timeline-status"><%= claim.status.replaceAll('_', ' ') %></p>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head">
+    <strong>Approval Timeline</strong>
+    <span class="subtle">Visible only to employees</span>
+  </div>
+  <div class="log-list">
+    <% if (!timeline.length) { %>
+      <p class="subtle">Timeline will appear after your first submission.</p>
+    <% } %>
+    <% timeline.slice(0, 8).forEach((item) => { %>
+      <div class="log-row">
+        <span><%= item.event_label %></span>
+        <small><%= item.created_at ? item.created_at.toISOString().slice(0, 16).replace("T", " ") : "" %></small>
+      </div>
+    <% }) %>
+  </div>
+</section>
+<%- include("partials/app-shell-end") %>

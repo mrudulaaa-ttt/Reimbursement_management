@@ -1,0 +1,44 @@
+<%- include("partials/app-shell-start") %>
+<section class="page-head">
+  <div>
+    <h2>Finance Dashboard</h2>
+    <p class="subtle">Department totals, decision outcomes, and high-risk reimbursements in one place.</p>
+  </div>
+  <div class="role-chip">Finance View</div>
+</section>
+
+<section class="stats-row">
+  <div class="stat-card"><span>Approved</span><strong><%= stats.summary.approved_count || 0 %></strong></div>
+  <div class="stat-card"><span>Rejected</span><strong><%= stats.summary.rejected_count || 0 %></strong></div>
+  <div class="stat-card"><span>Pending</span><strong><%= stats.summary.pending_count || 0 %></strong></div>
+  <div class="stat-card"><span>Total Spend</span><strong>INR <%= stats.summary.total_spend || 0 %></strong></div>
+</section>
+
+<section class="dashboard-grid finance-grid">
+  <div class="panel">
+    <div class="section-head"><strong>Spend Per Department</strong></div>
+    <% stats.departmentSpend.forEach((item) => { %>
+      <div class="meter-row">
+        <span><%= item.name %></span>
+        <div class="meter"><div class="meter-fill" style="width: <%= Math.min(Number(item.total || 0) / 15, 100) %>%"></div></div>
+        <strong>INR <%= item.total %></strong>
+      </div>
+    <% }) %>
+  </div>
+  <div class="panel">
+    <div class="section-head"><strong>Claim Review Feed</strong></div>
+    <div class="queue">
+      <% financeQueue.forEach((claim) => { %>
+        <article class="queue-card">
+          <div class="timeline-row">
+            <strong><%= claim.employee_name %></strong>
+            <span class="pill pill-<%= claim.status %>"><%= claim.status.replaceAll('_', ' ') %></span>
+          </div>
+          <p><%= claim.category_name %> | <%= claim.department_name || 'No Department' %> | INR <%= claim.amount %></p>
+          <small>Risk <%= claim.risk_score %> | <%= claim.ai_summary %></small>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<%- include("partials/app-shell-end") %>
