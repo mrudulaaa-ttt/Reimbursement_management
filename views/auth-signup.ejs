@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= pageTitle %></title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="auth-shell">
+    <section class="auth-visual signup-visual">
+      <div class="auth-badge">Workspace Creation</div>
+      <h1>Launch a reimbursement workspace in under a minute.</h1>
+      <p>Signup creates the company, maps the base currency from country, and provisions the admin account automatically.</p>
+    </section>
+
+    <section class="auth-card">
+      <div class="auth-head">
+        <p class="eyebrow">Signup</p>
+        <h2>Create company workspace</h2>
+      </div>
+      <% if (message) { %><div class="flash success"><%= message %></div><% } %>
+      <% if (error) { %><div class="flash error"><%= error %></div><% } %>
+      <form action="/signup" method="post" class="stack">
+        <label>
+          Company Name
+          <input type="text" name="company_name" required />
+        </label>
+        <label>
+          Country
+          <select name="country" required>
+            <option value="India">India</option>
+            <option value="United States">United States</option>
+            <option value="Germany">Germany</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="Singapore">Singapore</option>
+          </select>
+        </label>
+        <label>
+          Email
+          <input type="email" name="email" required />
+        </label>
+        <label>
+          Password
+          <input type="password" name="password" required />
+        </label>
+        <label>
+          Confirm Password
+          <input type="password" name="confirm_password" required />
+        </label>
+        <button type="submit">Create Workspace</button>
+      </form>
+      <div class="auth-links">
+        <a href="/login">Back to Login</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

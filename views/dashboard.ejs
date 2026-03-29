@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= pageTitle %></title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div>
+        <p class="eyebrow">Hackathon Demo</p>
+        <h1>Reimbursement Manager</h1>
+        <p class="subtle">Automation, transparency, and AI validation on a MySQL-backed workflow.</p>
+      </div>
+      <nav class="nav">
+        <a href="/">Dashboard</a>
+        <a href="/setup">Smart Setup</a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <% if (message) { %><div class="flash success"><%= message %></div><% } %>
+      <% if (error) { %><div class="flash error"><%= error %></div><% } %>
+
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Finance Command Center</p>
+          <h2>Messy reimbursements, cleaned up.</h2>
+          <p>Employees upload receipts, managers approve in one click, and finance gets AI-flagged risk signals before payout.</p>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-card">
+            <span>Total Claims</span>
+            <strong><%= stats.summary.total_claims || 0 %></strong>
+          </div>
+          <div class="stat-card">
+            <span>Approved</span>
+            <strong><%= stats.summary.approved_count || 0 %></strong>
+          </div>
+          <div class="stat-card">
+            <span>Rejected</span>
+            <strong><%= stats.summary.rejected_count || 0 %></strong>
+          </div>
+          <div class="stat-card">
+            <span>Total Spend</span>
+            <strong>$<%= stats.summary.total_spend || 0 %></strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid two">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Employee View</p>
+              <h3>Submit Claim</h3>
+            </div>
+          </div>
+          <form action="/claims" method="post" enctype="multipart/form-data" class="stack">
+            <label>
+              Employee
+              <select name="employee_id" required>
+                <% employees.forEach((employee) => { %>
+                  <option value="<%= employee.id %>"><%= employee.full_name %></option>
+                <% }) %>
+              </select>
+            </label>
+            <label>
+              Manager
+              <select name="manager_id" required>
+                <% managers.forEach((manager) => { %>
+                  <option value="<%= manager.id %>"><%= manager.full_name %></option>
+                <% }) %>
+              </select>
+            </label>
+            <label>
+              Category
+              <select name="category_id" required>
+                <% categories.forEach((category) => { %>
+                  <option value="<%= category.id %>"><%= category.name %></option>
+                <% }) %>
+              </select>
+            </label>
+            <div class="inline">
+              <label>
+                Amount
+                <input type="number" step="0.01" name="amount" required />
+              </label>
+              <label>
+                Expense Date
+                <input type="date" name="expense_date" required />
+              </label>
+            </div>
+            <label>
+              Description
+              <textarea name="description" rows="3" placeholder="Client travel, laptop accessory, ad spend..."></textarea>
+            </label>
+            <label>
+              Receipt
+              <input type="file" name="receipt" accept=".png,.jpg,.jpeg,.pdf" required />
+            </label>
+            <button type="submit">Scan, Validate, and Submit</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Employee Timeline</p>
+              <h3>Asha's Claims</h3>
+            </div>
+          </div>
+          <div class="timeline">
+            <% if (!employeeClaims.length) { %>
+              <p class="subtle">No claims yet. Upload one to start the demo.</p>
+            <% } %>
+            <% employeeClaims.forEach((claim) => { %>
+              <article class="timeline-card status-<%= claim.status %>">
+                <div class="timeline-row">
+                  <strong>#<%= claim.id %> <%= claim.category_name %></strong>
+                  <span>$<%= claim.amount %></span>
+                </div>
+                <p><%= claim.ai_summary %></p>
+                <small><%= claim.status.replaceAll('_', ' ') %> | <%= claim.expense_date.toISOString().slice(0,10) %></small>
+              </article>
+            <% }) %>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid two">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Manager Queue</p>
+              <h3>Approve Without Clutter</h3>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>AI Note</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (!managerQueue.length) { %>
+                  <tr><td colspan="5" class="subtle">No pending manager approvals.</td></tr>
+                <% } %>
+                <% managerQueue.forEach((claim) => { %>
+                  <tr>
+                    <td><%= claim.employee_name %></td>
+                    <td><%= claim.category_name %></td>
+                    <td>$<%= claim.amount %></td>
+                    <td><%= claim.ai_summary %></td>
+                    <td>
+                      <div class="actions">
+                        <form action="/claims/<%= claim.id %>/approve" method="post">
+                          <input type="hidden" name="user_id" value="2" />
+                          <button type="submit" class="ghost">Approve</button>
+                        </form>
+                        <form action="/claims/<%= claim.id %>/reject" method="post">
+                          <input type="hidden" name="user_id" value="2" />
+                          <input type="hidden" name="comment" value="Needs clarification" />
+                          <button type="submit" class="danger">Reject</button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Finance View</p>
+              <h3>Risk and Department Spend</h3>
+            </div>
+          </div>
+          <div class="spend-list">
+            <% stats.departmentSpend.forEach((item) => { %>
+              <div class="spend-row">
+                <span><%= item.name %></span>
+                <strong>$<%= item.total %></strong>
+              </div>
+            <% }) %>
+          </div>
+          <div class="queue">
+            <% financeQueue.forEach((claim) => { %>
+              <article class="queue-card">
+                <div class="timeline-row">
+                  <strong><%= claim.employee_name %></strong>
+                  <span class="pill pill-<%= claim.status %>"><%= claim.status.replaceAll('_', ' ') %></span>
+                </div>
+                <p><%= claim.category_name %> | <%= claim.department_name || 'No Department' %> | $<%= claim.amount %></p>
+                <small>Risk <%= claim.risk_score %> | <%= claim.ai_summary %></small>
+              </article>
+            <% }) %>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<%- include("partials/app-shell-start") %>
+<section class="page-head">
+  <div>
+    <h2>Executive Summary</h2>
+    <p class="subtle">High-level spend, decision ratios, and flagged outliers for the CFO demo.</p>
+  </div>
+  <div class="role-chip">Executive View</div>
+</section>
+
+<section class="stats-row">
+  <div class="stat-card"><span>Total Claims</span><strong><%= summary.summary.total_claims || 0 %></strong></div>
+  <div class="stat-card"><span>Approved</span><strong><%= summary.summary.approved_count || 0 %></strong></div>
+  <div class="stat-card"><span>Rejected</span><strong><%= summary.summary.rejected_count || 0 %></strong></div>
+  <div class="stat-card"><span>Spend</span><strong>INR <%= summary.summary.total_spend || 0 %></strong></div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><strong>Top AI Flags</strong></div>
+  <% if (!summary.topFlags.length) { %>
+    <p class="subtle">No flagged claims yet.</p>
+  <% } %>
+  <% summary.topFlags.forEach((flag) => { %>
+    <div class="flag-row">
+      <div>
+        <strong><%= flag.employee_name %></strong>
+        <p class="subtle"><%= flag.description || 'Expense claim' %></p>
+      </div>
+      <div class="flag-meta">
+        <span class="badge badge-danger"><%= flag.ai_summary %></span>
+        <strong>INR <%= flag.amount %></strong>
+      </div>
+    </div>
+  <% }) %>
+</section>
+<%- include("partials/app-shell-end") %>

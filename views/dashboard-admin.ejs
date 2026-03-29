@@ -1,0 +1,57 @@
+<%- include("partials/app-shell-start") %>
+<section class="page-head">
+  <div>
+    <h2>System Configuration</h2>
+    <p class="subtle">Manage users, company settings, and dynamic approval rules.</p>
+  </div>
+  <div class="role-chip">Admin View</div>
+</section>
+
+<section class="dashboard-grid admin-grid">
+  <div class="panel">
+    <div class="section-head"><strong>Localization Setup</strong></div>
+    <div class="stack">
+      <div class="info-row"><span>Company</span><strong><%= currentUser.company_name || 'Workspace' %></strong></div>
+      <div class="info-row"><span>Base Currency</span><strong><%= currentUser.currency_code || 'USD' %></strong></div>
+      <div class="info-row"><span>Active Users</span><strong><%= config.users.length %></strong></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="section-head"><strong>Workflow Engine</strong></div>
+    <div class="log-list">
+      <% config.flows.forEach((flow) => { %>
+        <div class="log-row">
+          <span><%= flow.category_name %> -> Step <%= flow.step_order %></span>
+          <strong><%= flow.role_name %></strong>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><strong>User Access Matrix</strong></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Department</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% config.users.forEach((user) => { %>
+          <tr>
+            <td><%= user.full_name %></td>
+            <td><%= user.email %></td>
+            <td><span class="badge badge-neutral"><%= user.role_name %></span></td>
+            <td><%= user.department_name || 'Not set' %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+<%- include("partials/app-shell-end") %>
