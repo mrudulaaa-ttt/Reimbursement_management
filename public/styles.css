@@ -24,6 +24,7 @@
 body {
   margin: 0;
   font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  line-height: 1.5;
   color: var(--text);
   background:
     radial-gradient(circle at top left, rgba(31, 143, 136, 0.14), transparent 22%),
@@ -77,7 +78,7 @@ small {
 .auth-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: minmax(520px, 1.1fr) minmax(420px, 0.9fr);
 }
 
 .auth-visual {
@@ -89,6 +90,8 @@ small {
   display: grid;
   align-content: center;
   gap: 24px;
+  position: relative;
+  overflow: hidden;
 }
 
 .signup-visual {
@@ -154,6 +157,7 @@ small {
   gap: 18px;
   background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(18px);
+  border-left: 1px solid rgba(36, 72, 108, 0.08);
 }
 
 .auth-head h2 {
@@ -190,6 +194,11 @@ textarea:focus {
   outline: none;
   border-color: rgba(31, 143, 136, 0.55);
   box-shadow: 0 0 0 4px rgba(31, 143, 136, 0.12);
+}
+
+textarea {
+  min-height: 112px;
+  resize: vertical;
 }
 
 button {
@@ -325,6 +334,9 @@ button.ghost,
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
 }
 
 .brand {
@@ -395,7 +407,13 @@ button.ghost,
 }
 
 .app-main {
-  padding: 34px 40px;
+  padding: 34px 40px 48px;
+  overflow-x: hidden;
+}
+
+.app-content {
+  width: min(1320px, 100%);
+  margin: 0 auto;
 }
 
 .page-head {
@@ -409,6 +427,10 @@ button.ghost,
 .page-head h2 {
   font-size: clamp(2.1rem, 3vw, 3.3rem);
   margin-bottom: 8px;
+}
+
+.page-head p {
+  max-width: 760px;
 }
 
 .dashboard-grid {
@@ -430,6 +452,13 @@ button.ghost,
   padding: 28px;
   box-shadow: var(--shadow);
   backdrop-filter: blur(12px);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 46px rgba(22, 34, 53, 0.1);
+  border-color: rgba(31, 143, 136, 0.18);
 }
 
 .upload-panel {
@@ -553,10 +582,21 @@ button.ghost,
   border-radius: 20px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(232, 246, 244, 0.34));
   box-shadow: var(--shadow-soft);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
 
 .timeline-card {
   min-width: 0;
+}
+
+.timeline-card:hover,
+.queue-card:hover,
+.log-row:hover,
+.info-row:hover,
+.flag-row:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(22, 34, 53, 0.08);
+  border-color: rgba(31, 143, 136, 0.18);
 }
 
 .timeline-row,
@@ -607,6 +647,12 @@ button.ghost,
   gap: 12px;
 }
 
+.panel > .log-list {
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
 .log-row,
 .info-row,
 .flag-row {
@@ -618,6 +664,31 @@ button.ghost,
 
 .table-wrap {
   overflow-x: auto;
+}
+
+.table-wrap,
+.panel > .log-list {
+  scrollbar-color: var(--teal) rgba(36, 72, 108, 0.08);
+  scrollbar-width: thin;
+}
+
+.table-wrap::-webkit-scrollbar,
+.panel > .log-list::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.table-wrap::-webkit-scrollbar-track,
+.panel > .log-list::-webkit-scrollbar-track {
+  background: rgba(36, 72, 108, 0.08);
+  border-radius: 999px;
+}
+
+.table-wrap::-webkit-scrollbar-thumb,
+.panel > .log-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--teal), var(--teal-dark));
+  border-radius: 999px;
+  border: 2px solid rgba(36, 72, 108, 0.08);
 }
 
 table {
@@ -819,6 +890,11 @@ td {
   word-break: break-word;
 }
 
+.queue-card strong,
+.timeline-card strong {
+  line-height: 1.3;
+}
+
 .compact-actions {
   margin-top: 16px;
   flex-wrap: wrap;
@@ -858,5 +934,48 @@ button:disabled {
   .auth-card,
   .app-main {
     padding: 28px;
+  }
+
+  .app-sidebar {
+    position: static;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .auth-shell {
+    min-height: auto;
+  }
+
+  .auth-visual,
+  .auth-card,
+  .panel,
+  .app-main {
+    padding: 22px;
+  }
+
+  .brand h1 {
+    font-size: 1.5rem;
+  }
+
+  .side-nav a,
+  button,
+  input,
+  select,
+  textarea {
+    border-radius: 14px;
+  }
+
+  .timeline-row,
+  .actions,
+  .info-row,
+  .flag-row,
+  .log-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .meter-row {
+    grid-template-columns: 1fr;
   }
 }
