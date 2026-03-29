@@ -12,7 +12,7 @@
     <div class="section-head"><strong>Localization Setup</strong></div>
     <div class="stack">
       <div class="info-row"><span>Company</span><strong><%= currentUser.company_name || 'Workspace' %></strong></div>
-      <div class="info-row"><span>Registered Country</span><strong><%= Object.keys(currencyMap).find((country) => currencyMap[country] === (currentUser.currency_code || 'INR')) || 'Configured' %></strong></div>
+      <div class="info-row"><span>Registered Country</span><strong><%= companyCountry || currentUser.country || 'Configured' %></strong></div>
       <div class="info-row"><span>Base Currency</span><strong><%= currentUser.currency_code || 'USD' %></strong></div>
       <div class="info-row"><span>Active Users</span><strong><%= config.users.length %></strong></div>
     </div>
@@ -158,6 +158,18 @@
       <div class="log-row">
         <span><strong><%= notice.title %></strong> - <%= notice.body %></span>
         <small><%= notice.created_at.toISOString().slice(0, 16).replace("T", " ") %></small>
+      </div>
+    <% }) %>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><strong>Workflow History</strong></div>
+  <div class="log-list">
+    <% historyFeed.forEach((item) => { %>
+      <div class="log-row">
+        <span><strong><%= item.title %></strong> - <%= item.detail %></span>
+        <small><%= item.created_at ? item.created_at.toISOString().slice(0, 16).replace("T", " ") : "" %></small>
       </div>
     <% }) %>
   </div>

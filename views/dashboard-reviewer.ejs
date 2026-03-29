@@ -1,0 +1,73 @@
+<%- include("partials/app-shell-start") %>
+<section class="page-head">
+  <div>
+    <h2><%= reviewerLabel %> Desk</h2>
+    <p class="subtle">This reviewer is part of the 60% consensus layer after manager approval.</p>
+  </div>
+  <div class="role-chip"><%= reviewerLabel %></div>
+</section>
+
+<section class="panel">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Amount</th>
+          <th>Decision</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!reviewQueue.length) { %>
+          <tr><td colspan="5" class="subtle">No review requests pending.</td></tr>
+        <% } %>
+        <% reviewQueue.forEach((claim) => { %>
+          <tr>
+            <td><%= claim.employee_name %></td>
+            <td><%= claim.category_name %></td>
+            <td><span class="pill pill-<%= claim.status %>"><%= claim.status_label %></span></td>
+            <td><%= claim.reported_currency %> <%= claim.amount %></td>
+            <td>
+              <div class="actions">
+                <form action="/reviews/<%= claim.id %>/approve" method="post">
+                  <button type="submit">Approve</button>
+                </form>
+                <form action="/reviews/<%= claim.id %>/reject" method="post">
+                  <input type="hidden" name="comment" value="<%= reviewerLabel %> rejected" />
+                  <button type="submit" class="ghost">Reject</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><strong>Reviewer History</strong></div>
+  <div class="log-list">
+    <% historyFeed.forEach((item) => { %>
+      <div class="log-row">
+        <span><strong><%= item.title %></strong> - <%= item.detail %></span>
+        <small><%= item.created_at ? item.created_at.toISOString().slice(0, 16).replace("T", " ") : "" %></small>
+      </div>
+    <% }) %>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><strong>Notifications</strong></div>
+  <div class="log-list">
+    <% notifications.forEach((notice) => { %>
+      <div class="log-row">
+        <span><strong><%= notice.title %></strong> - <%= notice.body %></span>
+        <small><%= notice.created_at.toISOString().slice(0, 16).replace("T", " ") %></small>
+      </div>
+    <% }) %>
+  </div>
+</section>
+<%- include("partials/app-shell-end") %>

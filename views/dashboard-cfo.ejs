@@ -1,17 +1,70 @@
 <%- include("partials/app-shell-start") %>
 <section class="page-head">
   <div>
-    <h2>Executive Summary</h2>
-    <p class="subtle">High-level spend, decision ratios, and flagged outliers for the CFO demo.</p>
+    <h2>CFO Shortcut Desk</h2>
+    <p class="subtle">CFO approval is independent from the 60% calculation. If CFO approves, the expense is immediately approved.</p>
   </div>
-  <div class="role-chip">Executive View</div>
+  <div class="role-chip">CFO View</div>
 </section>
 
 <section class="stats-row">
   <div class="stat-card"><span>Total Claims</span><strong><%= summary.summary.total_claims || 0 %></strong></div>
   <div class="stat-card"><span>Approved</span><strong><%= summary.summary.approved_count || 0 %></strong></div>
   <div class="stat-card"><span>Rejected</span><strong><%= summary.summary.rejected_count || 0 %></strong></div>
-  <div class="stat-card"><span>Spend</span><strong>INR <%= summary.summary.total_spend || 0 %></strong></div>
+  <div class="stat-card"><span>Spend</span><strong><%= summary.summary.total_spend || 0 %></strong></div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><strong>CFO Approval Queue</strong></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Category</th>
+          <th>Amount</th>
+          <th>AI Summary</th>
+          <th>Decision</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!reviewQueue.length) { %>
+          <tr><td colspan="5" class="subtle">No CFO shortcuts pending.</td></tr>
+        <% } %>
+        <% reviewQueue.forEach((claim) => { %>
+          <tr>
+            <td><%= claim.employee_name %></td>
+            <td><%= claim.category_name %></td>
+            <td><%= claim.reported_currency %> <%= claim.amount %></td>
+            <td><%= claim.ai_summary %></td>
+            <td>
+              <div class="actions">
+                <form action="/reviews/<%= claim.id %>/approve" method="post">
+                  <button type="submit">Approve</button>
+                </form>
+                <form action="/reviews/<%= claim.id %>/reject" method="post">
+                  <input type="hidden" name="comment" value="CFO did not approve" />
+                  <button type="submit" class="ghost">Reject</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><strong>CFO History</strong></div>
+  <div class="log-list">
+    <% historyFeed.forEach((item) => { %>
+      <div class="log-row">
+        <span><strong><%= item.title %></strong> - <%= item.detail %></span>
+        <small><%= item.created_at ? item.created_at.toISOString().slice(0, 16).replace("T", " ") : "" %></small>
+      </div>
+    <% }) %>
+  </div>
 </section>
 
 <section class="panel">
@@ -27,9 +80,21 @@
       </div>
       <div class="flag-meta">
         <span class="badge badge-danger"><%= flag.ai_summary %></span>
-        <strong>INR <%= flag.amount %></strong>
+        <strong><%= flag.company_currency %> <%= flag.converted_amount %></strong>
       </div>
     </div>
   <% }) %>
+</section>
+
+<section class="panel">
+  <div class="section-head"><strong>Notifications</strong></div>
+  <div class="log-list">
+    <% notifications.forEach((notice) => { %>
+      <div class="log-row">
+        <span><strong><%= notice.title %></strong> - <%= notice.body %></span>
+        <small><%= notice.created_at.toISOString().slice(0, 16).replace("T", " ") %></small>
+      </div>
+    <% }) %>
+  </div>
 </section>
 <%- include("partials/app-shell-end") %>

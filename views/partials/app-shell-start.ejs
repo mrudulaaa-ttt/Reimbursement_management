@@ -23,7 +23,9 @@
           <a href="/dashboard/manager" class="<%= currentUser && currentUser.role_code === 'manager' ? 'active' : '' %>">Manager Desk</a>
           <a href="/dashboard/admin" class="<%= currentUser && currentUser.role_code === 'admin' ? 'active' : '' %>">Admin Control</a>
           <a href="/dashboard/finance" class="<%= currentUser && currentUser.role_code === 'finance' ? 'active' : '' %>">Finance Hub</a>
-          <a href="/dashboard/cfo" class="<%= currentUser && currentUser.role_code === 'cfo' ? 'active' : '' %>">Executive View</a>
+          <a href="/dashboard/reviewer" class="<%= currentUser && ['department_head','ops','procurement','tech_head','marketing_head','senior_manager'].includes(currentUser.role_code) ? 'active' : '' %>">Stakeholder Desk</a>
+          <a href="/dashboard/cfo" class="<%= currentUser && currentUser.role_code === 'cfo' ? 'active' : '' %>">CFO Shortcut</a>
+          <a href="/dashboard/ceo" class="<%= currentUser && currentUser.role_code === 'ceo' ? 'active' : '' %>">CEO Override</a>
         </nav>
       </div>
       <div class="sidebar-footer">

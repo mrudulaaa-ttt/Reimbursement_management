@@ -15,7 +15,7 @@
     <% if (!managerConfigured) { %>
       <div class="flash error">Reporting manager is not assigned yet. Ask admin to define the employee-manager relationship.</div>
     <% } %>
-    <form action="/claims" method="post" enctype="multipart/form-data" class="stack">
+    <form action="/claims" method="post" enctype="multipart/form-data" class="stack" data-claim-form>
       <label>
         Category
         <select name="category_id" data-request-category required>
@@ -62,6 +62,8 @@
         Upload Documents
         <input type="file" name="receipt" data-request-file required />
       </label>
+      <input type="hidden" name="submit_anyway" value="0" data-submit-anyway />
+      <input type="hidden" name="precheck_complete" value="0" data-precheck-complete />
       <div class="request-preview">
         <div class="section-head">
           <strong>Formatted Request Preview</strong>
@@ -69,16 +71,31 @@
         </div>
         <p data-request-preview>Category, amount, date, and uploaded document summary will appear here.</p>
       </div>
+      <div class="validation-panel hidden" data-validation-panel>
+        <div class="section-head">
+          <strong>Validation Checks</strong>
+          <span class="subtle" data-validation-summary>Review before routing to approval flow</span>
+        </div>
+        <div class="validation-list" data-validation-list></div>
+        <label>
+          Justification For Submit Anyway
+          <textarea name="employee_justification" rows="3" placeholder="Explain why this should still proceed..." data-justification-input></textarea>
+        </label>
+        <div class="validation-actions">
+          <button type="button" class="ghost" data-validation-edit>Cancel / Edit</button>
+          <button type="button" data-validation-submit>Submit Anyway</button>
+        </div>
+      </div>
       <button type="submit" <%= managerConfigured ? '' : 'disabled' %>>Submit Request</button>
     </form>
   </div>
 
-  <div class="panel">
+  <div class="panel recent-claims-panel">
     <div class="section-head">
       <strong>Recent Claims</strong>
       <span class="subtle">Employees can see full status trail</span>
     </div>
-    <div class="timeline-track">
+    <div class="timeline-track recent-claims-scroll">
       <% if (!employeeClaims.length) { %>
         <p class="subtle">No claims yet.</p>
       <% } %>
@@ -91,7 +108,7 @@
               <span><%= claim.reported_currency %> <%= claim.amount %></span>
             </div>
             <p class="subtle">Submitted: <%= claim.expense_date.toISOString().slice(0, 10) %></p>
-            <p class="timeline-status"><%= claim.status_label %></p>
+            <p class="timeline-status status-<%= claim.status %>"><%= claim.status_label %></p>
             <small>OCR: <%= claim.ocr_status %> | Authenticity: <%= claim.authenticity_status %> | Converted: <%= claim.company_currency %> <%= claim.converted_amount %></small>
           </div>
         </article>
@@ -120,11 +137,14 @@
   </div>
 
   <div class="panel">
-    <div class="section-head">
-      <strong>Notifications</strong>
-      <span class="subtle">Approval, disapproval, and update alerts</span>
-    </div>
+    <div class="section-head"><strong>History and Notifications</strong><span class="subtle">Saved updates for this user</span></div>
     <div class="log-list">
+      <% historyFeed.forEach((item) => { %>
+        <div class="log-row">
+          <span><strong><%= item.title %></strong> - <%= item.detail %></span>
+          <small><%= item.created_at ? item.created_at.toISOString().slice(0, 16).replace("T", " ") : "" %></small>
+        </div>
+      <% }) %>
       <% notifications.forEach((notice) => { %>
         <div class="log-row">
           <span><strong><%= notice.title %></strong> - <%= notice.body %></span>

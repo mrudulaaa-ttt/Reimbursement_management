@@ -1,4 +1,13 @@
     </main>
   </div>
+  <script>
+    (() => {
+      const navEntry = performance.getEntriesByType("navigation")[0];
+      if (navEntry && navEntry.type === "reload") {
+        navigator.sendBeacon("/session/refresh-logout", new Blob(["reload"], { type: "text/plain" }));
+        window.location.replace("/login?message=" + encodeURIComponent("Session closed after refresh for safety"));
+      }
+    })();
+  </script>
 </body>
 </html>

@@ -1,0 +1,72 @@
+<%- include("partials/app-shell-start") %>
+<section class="page-head">
+  <div>
+    <h2>CEO Override Desk</h2>
+    <p class="subtle">Final authority. CEO can force approve or force reject after the rule engine stage.</p>
+  </div>
+  <div class="role-chip">CEO View</div>
+</section>
+
+<section class="panel">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Amount</th>
+          <th>Override</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!ceoQueue.length) { %>
+          <tr><td colspan="5" class="subtle">No claims available for CEO override.</td></tr>
+        <% } %>
+        <% ceoQueue.forEach((claim) => { %>
+          <tr>
+            <td><%= claim.employee_name %></td>
+            <td><%= claim.category_name %></td>
+            <td><span class="pill pill-<%= claim.status %>"><%= claim.status_label %></span></td>
+            <td><%= claim.company_currency %> <%= claim.converted_amount %></td>
+            <td>
+              <div class="actions">
+                <form action="/ceo/<%= claim.id %>/approve" method="post">
+                  <button type="submit">Force Approve</button>
+                </form>
+                <form action="/ceo/<%= claim.id %>/reject" method="post">
+                  <button type="submit" class="ghost">Force Reject</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><strong>Override History</strong></div>
+  <div class="log-list">
+    <% historyFeed.forEach((item) => { %>
+      <div class="log-row">
+        <span><strong><%= item.title %></strong> - <%= item.detail %></span>
+        <small><%= item.created_at ? item.created_at.toISOString().slice(0, 16).replace("T", " ") : "" %></small>
+      </div>
+    <% }) %>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><strong>Notifications</strong></div>
+  <div class="log-list">
+    <% notifications.forEach((notice) => { %>
+      <div class="log-row">
+        <span><strong><%= notice.title %></strong> - <%= notice.body %></span>
+        <small><%= notice.created_at.toISOString().slice(0, 16).replace("T", " ") %></small>
+      </div>
+    <% }) %>
+  </div>
+</section>
+<%- include("partials/app-shell-end") %>

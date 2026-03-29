@@ -225,6 +225,52 @@ button.ghost,
   background: var(--surface-soft);
 }
 
+.hidden {
+  display: none !important;
+}
+
+.validation-panel {
+  text-align: left;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid #f5d0d7;
+  background: #fff7f8;
+}
+
+.validation-list {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.validation-item {
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: white;
+}
+
+.validation-item p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.validation-danger {
+  border-color: #f3b6c2;
+  background: #fff2f4;
+}
+
+.validation-warning {
+  border-color: #f7d99f;
+  background: #fff9ee;
+}
+
+.validation-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
 .request-preview p {
   margin-bottom: 0;
   color: var(--muted);
@@ -375,6 +421,12 @@ button.ghost,
   text-align: center;
 }
 
+.recent-claims-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .upload-icon {
   width: 84px;
   height: 84px;
@@ -398,6 +450,33 @@ button.ghost,
   gap: 18px;
 }
 
+.recent-claims-scroll {
+  max-height: 560px;
+  overflow-y: auto;
+  padding-right: 10px;
+  align-content: start;
+}
+
+.recent-claims-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.recent-claims-scroll::-webkit-scrollbar-track {
+  background: #eef2f7;
+  border-radius: 999px;
+}
+
+.recent-claims-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--teal), var(--teal-dark));
+  border-radius: 999px;
+  border: 2px solid #eef2f7;
+}
+
+.recent-claims-scroll {
+  scrollbar-color: var(--teal) #eef2f7;
+  scrollbar-width: thin;
+}
+
 .timeline-item {
   display: grid;
   grid-template-columns: 18px 1fr;
@@ -417,13 +496,36 @@ button.ghost,
   background: var(--success);
 }
 
+.dot-force_approved_by_ceo {
+  background: var(--success);
+}
+
 .dot-rejected {
+  background: var(--danger);
+}
+
+.dot-disapproved_by_manager,
+.dot-disapproved_by_finance,
+.dot-disapproved_by_ops,
+.dot-disapproved_by_department_head,
+.dot-disapproved_by_procurement,
+.dot-disapproved_by_marketing_head,
+.dot-disapproved_by_tech_head,
+.dot-rejected_rule_engine,
+.dot-force_rejected_by_ceo {
   background: var(--danger);
 }
 
 .dot-pending_manager,
 .dot-in_review,
-.dot-under_finance_review {
+.dot-under_finance_review,
+.dot-under_parallel_review,
+.dot-under_review_finance,
+.dot-under_review_ops,
+.dot-under_review_department_head,
+.dot-under_review_procurement,
+.dot-under_review_marketing_head,
+.dot-under_review_tech_head {
   background: var(--warning);
 }
 
@@ -433,6 +535,10 @@ button.ghost,
   border: 1px solid var(--line);
   border-radius: 20px;
   background: var(--surface-soft);
+}
+
+.timeline-card {
+  min-width: 0;
 }
 
 .timeline-row,
@@ -452,6 +558,30 @@ button.ghost,
   color: var(--warning);
   font-weight: 700;
   text-transform: capitalize;
+}
+
+.timeline-card strong,
+.timeline-card span,
+.timeline-card small,
+.timeline-card p {
+  word-break: break-word;
+}
+
+.timeline-status.status-approved,
+.timeline-status.status-force_approved_by_ceo {
+  color: var(--success);
+}
+
+.timeline-status.status-disapproved_by_manager,
+.timeline-status.status-disapproved_by_finance,
+.timeline-status.status-disapproved_by_ops,
+.timeline-status.status-disapproved_by_department_head,
+.timeline-status.status-disapproved_by_procurement,
+.timeline-status.status-disapproved_by_marketing_head,
+.timeline-status.status-disapproved_by_tech_head,
+.timeline-status.status-rejected_rule_engine,
+.timeline-status.status-force_rejected_by_ceo {
+  color: var(--danger);
 }
 
 .log-list {
@@ -527,14 +657,39 @@ td {
   color: var(--success);
 }
 
+.pill-force_approved_by_ceo {
+  background: #e7f8f3;
+  color: var(--success);
+}
+
 .pill-rejected {
+  background: #fff0f2;
+  color: var(--danger);
+}
+
+.pill-disapproved_by_manager,
+.pill-disapproved_by_finance,
+.pill-disapproved_by_ops,
+.pill-disapproved_by_department_head,
+.pill-disapproved_by_procurement,
+.pill-disapproved_by_marketing_head,
+.pill-disapproved_by_tech_head,
+.pill-rejected_rule_engine,
+.pill-force_rejected_by_ceo {
   background: #fff0f2;
   color: var(--danger);
 }
 
 .pill-pending_manager,
 .pill-in_review,
-.pill-under_finance_review {
+.pill-under_finance_review,
+.pill-under_parallel_review,
+.pill-under_review_finance,
+.pill-under_review_ops,
+.pill-under_review_department_head,
+.pill-under_review_procurement,
+.pill-under_review_marketing_head,
+.pill-under_review_tech_head {
   background: #fff6e8;
   color: var(--warning);
 }

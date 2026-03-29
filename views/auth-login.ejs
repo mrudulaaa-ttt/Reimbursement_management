@@ -28,7 +28,7 @@
       <div class="auth-head">
         <p class="eyebrow">Login</p>
         <h2>Access your workspace</h2>
-        <p class="subtle">Minimal, fast, and built for live demo switching.</p>
+        <p class="subtle">Secure credential login with role detection after authentication.</p>
       </div>
       <% if (message) { %><div class="flash success"><%= message %></div><% } %>
       <% if (error) { %><div class="flash error"><%= error %></div><% } %>
@@ -49,21 +49,12 @@
         <a href="/forgot-password">Forgot Password</a>
         <a href="/signup">Signup</a>
       </div>
-
       <div class="demo-switcher">
         <div class="section-head">
-          <strong>Quick Switch Demo</strong>
-          <span class="subtle">One tap per role</span>
+          <strong>Demo Credentials</strong>
+          <span class="subtle">Manual login only</span>
         </div>
-        <div class="switch-grid">
-          <% quickSwitchUsers.forEach((user) => { %>
-            <form action="/demo-switch" method="post">
-              <input type="hidden" name="user_id" value="<%= user.id %>" />
-              <button type="submit" class="switch-pill"><%= user.role_code %></button>
-            </form>
-          <% }) %>
-        </div>
-        <p class="subtle">Demo users: employee@test.com, manager@test.com, finance@test.com, cfo@test.com, admin@test.com. Password: demo123.</p>
+        <p class="subtle">Use role emails like `employee@test.com`, `manager@test.com`, `finance@test.com`, `cfo@test.com`, `ceo@test.com`, or `admin@test.com` with password `demo123`.</p>
       </div>
     </section>
   </main>

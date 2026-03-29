@@ -20,12 +20,12 @@
     </div>
   </div>
   <div class="panel">
-    <div class="section-head"><strong>Notifications</strong></div>
+    <div class="section-head"><strong>Review History</strong></div>
     <div class="log-list">
-      <% notifications.forEach((notice) => { %>
+      <% historyFeed.forEach((item) => { %>
         <div class="log-row">
-          <span><strong><%= notice.title %></strong> - <%= notice.body %></span>
-          <small><%= notice.created_at.toISOString().slice(0, 16).replace("T", " ") %></small>
+          <span><strong><%= item.title %></strong> - <%= item.detail %></span>
+          <small><%= item.created_at ? item.created_at.toISOString().slice(0, 16).replace("T", " ") : "" %></small>
         </div>
       <% }) %>
     </div>
@@ -57,7 +57,7 @@
             <td>
               <strong><%= claim.category_name %></strong>
               <div class="subtle"><%= claim.description || 'Expense claim' %></div>
-              <div class="subtle"><%= claim.status_label %></div>
+              <div><span class="pill pill-<%= claim.status %>"><%= claim.status_label %></span></div>
             </td>
             <td>
               <strong><%= claim.reported_currency %> <%= claim.amount %></strong>
@@ -81,6 +81,18 @@
         <% }) %>
       </tbody>
     </table>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-head"><strong>Notifications</strong></div>
+  <div class="log-list">
+    <% notifications.forEach((notice) => { %>
+      <div class="log-row">
+        <span><strong><%= notice.title %></strong> - <%= notice.body %></span>
+        <small><%= notice.created_at.toISOString().slice(0, 16).replace("T", " ") %></small>
+      </div>
+    <% }) %>
   </div>
 </section>
 <%- include("partials/app-shell-end") %>

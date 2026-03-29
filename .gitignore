@@ -2,3 +2,5 @@
 node_modules/
 .fetch-client/
 reimbursement_management/
+ml/__pycache__/
+*.pyc

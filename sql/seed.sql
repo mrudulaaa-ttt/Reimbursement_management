@@ -16,14 +16,18 @@ INSERT IGNORE INTO roles (id, name, code) VALUES
   (8, 'Procurement Lead', 'procurement'),
   (9, 'Marketing Head', 'marketing_head'),
   (10, 'Admin', 'admin'),
-  (11, 'Senior Manager', 'senior_manager');
+  (11, 'Senior Manager', 'senior_manager'),
+  (12, 'CEO', 'ceo');
 
 INSERT IGNORE INTO companies (id, name, country, currency_code) VALUES
   (1, 'Demo Workspace', 'India', 'INR');
 
 INSERT IGNORE INTO users (id, full_name, email, password, company_id, department_id, manager_user_id) VALUES
   (1, 'Asha Employee', 'employee@test.com', 'demo123', 1, 1, 2),
+  (13, 'Neha Employee', 'employee2@test.com', 'demo123', 1, 1, 2),
+  (14, 'Karthik Employee', 'employee3@test.com', 'demo123', 1, 2, 15),
   (2, 'Ravi Manager', 'manager@test.com', 'demo123', 1, 1, NULL),
+  (15, 'Maya Manager', 'manager2@test.com', 'demo123', 1, 2, NULL),
   (3, 'Nina Finance', 'finance@test.com', 'demo123', 1, 4, NULL),
   (4, 'Omar Operations', 'ops@test.com', 'demo123', 1, 3, NULL),
   (5, 'Priya Tech Head', 'techhead@test.com', 'demo123', 1, 1, NULL),
@@ -37,7 +41,10 @@ INSERT IGNORE INTO users (id, full_name, email, password, company_id, department
 
 INSERT IGNORE INTO user_roles (user_id, role_id) VALUES
   (1, 1),
+  (13, 1),
+  (14, 1),
   (2, 2),
+  (15, 2),
   (3, 4),
   (4, 6),
   (5, 7),
@@ -52,7 +59,18 @@ INSERT IGNORE INTO user_roles (user_id, role_id) VALUES
 INSERT IGNORE INTO expense_categories (id, name, code, soft_limit) VALUES
   (1, 'Travel Expense', 'travel', 500.00),
   (2, 'Tech Purchase', 'tech', 1500.00),
-  (3, 'Marketing Budget', 'marketing', 1000.00);
+  (3, 'Marketing Budget', 'marketing', 1000.00),
+  (4, 'Accommodation', 'accommodation', 800.00),
+  (5, 'Meals and Entertainment', 'meals', 300.00),
+  (6, 'Local Transport', 'local_transport', 250.00),
+  (7, 'Training and Conference', 'training', 1200.00),
+  (8, 'Office Supplies', 'office_supplies', 400.00),
+  (9, 'Internet and Telecom', 'internet_telecom', 350.00),
+  (10, 'Client Hospitality', 'client_hospitality', 700.00),
+  (11, 'Software and SaaS', 'software_saas', 1800.00),
+  (12, 'Medical and Wellness', 'medical_wellness', 600.00),
+  (13, 'Team Events', 'team_events', 900.00),
+  (14, 'Other Expense', 'other', 500.00);
 
 INSERT IGNORE INTO approval_flows (category_id, step_order, role_id) VALUES
   (1, 1, 4),
@@ -63,4 +81,37 @@ INSERT IGNORE INTO approval_flows (category_id, step_order, role_id) VALUES
   (2, 3, 8),
   (3, 1, 9),
   (3, 2, 4),
-  (3, 3, 6);
+  (3, 3, 6),
+  (4, 1, 4),
+  (4, 2, 6),
+  (4, 3, 3),
+  (5, 1, 11),
+  (5, 2, 4),
+  (5, 3, 3),
+  (6, 1, 4),
+  (6, 2, 6),
+  (6, 3, 3),
+  (7, 1, 3),
+  (7, 2, 4),
+  (7, 3, 11),
+  (8, 1, 8),
+  (8, 2, 4),
+  (8, 3, 3),
+  (9, 1, 8),
+  (9, 2, 4),
+  (9, 3, 3),
+  (10, 1, 11),
+  (10, 2, 4),
+  (10, 3, 3),
+  (11, 1, 7),
+  (11, 2, 4),
+  (11, 3, 8),
+  (12, 1, 11),
+  (12, 2, 4),
+  (12, 3, 3),
+  (13, 1, 11),
+  (13, 2, 4),
+  (13, 3, 3),
+  (14, 1, 11),
+  (14, 2, 4),
+  (14, 3, 3);

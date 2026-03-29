@@ -29,14 +29,14 @@
         <label>
           Country
           <select name="country" data-country-select required>
-            <% Object.keys(currencyMap).forEach((country) => { %>
-              <option value="<%= country %>"><%= country %></option>
+            <% countryRows.forEach((row, index) => { %>
+              <option value="<%= row.country %>" data-currency-code="<%= row.currency %>" <%= index === 0 ? 'selected' : '' %>><%= row.country %></option>
             <% }) %>
           </select>
         </label>
         <label>
           Auto-assigned Currency
-          <input type="text" value="<%= currencyMap['India'] %>" data-currency-preview readonly />
+          <input type="text" value="<%= countryRows[0]?.currency || 'USD' %>" data-currency-preview readonly />
         </label>
         <label>
           Admin Email
@@ -57,9 +57,6 @@
       </div>
     </section>
   </main>
-  <script>
-    window.currencyMap = <%- JSON.stringify(currencyMap) %>;
-  </script>
   <script src="/app.js"></script>
 </body>
 </html>

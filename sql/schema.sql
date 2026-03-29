@@ -72,12 +72,14 @@ CREATE TABLE IF NOT EXISTS claims (
   receipt_name VARCHAR(255) NOT NULL,
   receipt_hash CHAR(64) NOT NULL,
   ocr_vendor VARCHAR(255),
+  ocr_bill_ref VARCHAR(120),
   ocr_amount DECIMAL(12,2),
   ocr_date DATE,
   ocr_status VARCHAR(40) NOT NULL DEFAULT 'checked',
   authenticity_status VARCHAR(40) NOT NULL DEFAULT 'authentic',
   risk_score INT NOT NULL DEFAULT 0,
   ai_summary TEXT,
+  employee_justification TEXT NULL,
   formatted_request TEXT,
   status VARCHAR(60) NOT NULL DEFAULT 'pending_manager',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -126,13 +128,71 @@ CREATE TABLE IF NOT EXISTS ai_audits (
   claim_id INT NOT NULL,
   receipt_hash CHAR(64) NOT NULL,
   ocr_vendor VARCHAR(255),
+  ocr_bill_ref VARCHAR(120),
   ocr_amount DECIMAL(12,2),
   ocr_date DATE,
   duplicate_flag TINYINT(1) NOT NULL DEFAULT 0,
+  shared_bill_flag TINYINT(1) NOT NULL DEFAULT 0,
+  shared_bill_count INT NOT NULL DEFAULT 0,
   amount_mismatch_flag TINYINT(1) NOT NULL DEFAULT 0,
   unusual_flag TINYINT(1) NOT NULL DEFAULT 0,
   risk_score INT NOT NULL DEFAULT 0,
   summary TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_ai_audits_claim FOREIGN KEY (claim_id) REFERENCES claims(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS claim_validation_flags (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  claim_id INT NOT NULL,
+  flag_code VARCHAR(80) NOT NULL,
+  flag_title VARCHAR(160) NOT NULL,
+  flag_message TEXT NOT NULL,
+  severity VARCHAR(20) NOT NULL DEFAULT 'warning',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_claim_validation_flags_claim FOREIGN KEY (claim_id) REFERENCES claims(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS fraud_flags (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  claim_id INT NOT NULL,
+  employee_user_id INT NOT NULL,
+  flag_type VARCHAR(80) NOT NULL,
+  severity VARCHAR(20) NOT NULL DEFAULT 'warning',
+  confidence_score DECIMAL(5,2) NOT NULL DEFAULT 0,
+  flag_message TEXT NOT NULL,
+  review_status VARCHAR(30) NOT NULL DEFAULT 'open',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_fraud_flags_claim FOREIGN KEY (claim_id) REFERENCES claims(id) ON DELETE CASCADE,
+  CONSTRAINT fk_fraud_flags_employee FOREIGN KEY (employee_user_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS currency_logs (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  claim_id INT NOT NULL,
+  base_currency VARCHAR(10) NOT NULL,
+  target_currency VARCHAR(10) NOT NULL,
+  exchange_rate DECIMAL(12,6) NOT NULL,
+  source_api VARCHAR(160) NOT NULL,
+  original_amount DECIMAL(12,2) NOT NULL,
+  converted_amount DECIMAL(12,2) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_currency_logs_claim FOREIGN KEY (claim_id) REFERENCES claims(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS expense_insights (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  claim_id INT NULL,
+  employee_user_id INT NULL,
+  category_id INT NULL,
+  company_id INT NULL,
+  insight_type VARCHAR(80) NOT NULL,
+  metric_value DECIMAL(14,2) NOT NULL,
+  metric_currency VARCHAR(10) NULL,
+  insight_text TEXT NOT NULL,
+  generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_expense_insights_claim FOREIGN KEY (claim_id) REFERENCES claims(id) ON DELETE CASCADE,
+  CONSTRAINT fk_expense_insights_employee FOREIGN KEY (employee_user_id) REFERENCES users(id) ON DELETE SET NULL,
+  CONSTRAINT fk_expense_insights_category FOREIGN KEY (category_id) REFERENCES expense_categories(id) ON DELETE SET NULL,
+  CONSTRAINT fk_expense_insights_company FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE SET NULL
 );
